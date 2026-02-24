@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KeyBlitz — Keyboard Shortcut Trainer</title>
+  <meta name="description" content="A gamified keyboard shortcut trainer for VS Code, Chrome, and Windows. Level up your shortcut skills!" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>" />
+</head>
+<body>
+
+  <!-- ===================== HOME SCREEN ===================== -->
+  <div id="screen-home" class="screen">
+    <nav class="navbar">
+      <div class="nav-logo">
+        KeyBlitz
+        <span>// SHORTCUT TRAINER</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted)">v1.0.0</div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-badge">⌨️ &nbsp; Gamified Learning Experience</div>
+      <h1 class="hero-title">
+        Master shortcuts.<br>
+        <span class="gradient-text">Level up fast.</span>
+      </h1>
+      <p class="hero-sub">
+        A game-powered trainer that turns keyboard shortcuts into muscle memory — fast.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-pill">🎮 <strong>3 Apps</strong>&nbsp; to master</div>
+        <div class="stat-pill">🏆 <strong>3 Levels</strong>&nbsp; of difficulty</div>
+        <div class="stat-pill">⚡ <strong>72+</strong>&nbsp; shortcuts total</div>
+      </div>
+    </div>
+
+    <p class="section-label">— Choose an App to Train —</p>
+    <div id="app-grid" class="app-grid"></div>
+  </div>
+
+  <!-- ===================== SELECT LEVEL SCREEN ===================== -->
+  <div id="screen-select" class="screen">
+    <nav class="navbar">
+      <div class="nav-logo">
+        KeyBlitz
+        <span>// SELECT LEVEL</span>
+      </div>
+      <button class="nav-btn" onclick="goHome()">← Back</button>
+    </nav>
+
+    <div class="select-header">
+      <div id="select-app-icon" class="select-app-icon"></div>
+      <h2 id="select-app-name" class="select-app-name"></h2>
+      <p class="select-subtitle">Choose your difficulty level to begin</p>
+    </div>
+
+    <p class="section-label">— Select Difficulty —</p>
+    <div id="level-grid" class="level-grid"></div>
+  </div>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <div id="screen-game" class="screen">
+
+    <!-- Header -->
+    <div class="game-header">
+      <div>
+        <div id="game-app-name" class="game-app-info">Loading...</div>
+      </div>
+      <div class="score-display-wrap">
+        <div class="score-label">SCORE</div>
+        <div id="score-display">0</div>
+      </div>
+      <button class="nav-btn" onclick="goSelect()">✕ Quit</button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+      </div>
+      <div id="progress-text" class="progress-text">1 / 8</div>
+    </div>
+
+    <!-- Question Area -->
+    <div class="question-area">
+
+      <!-- Combo -->
+      <div id="combo-display" class="combo-display"></div>
+
+      <!-- Task Label -->
+      <div class="task-label">// What's the shortcut for?</div>
+
+      <!-- Description -->
+      <div id="shortcut-description" class="shortcut-description">Loading...</div>
+
+      <!-- Timer -->
+      <div class="timer-section">
+        <div id="timer-display" class="timer-display">15</div>
+        <div class="timer-bar-track">
+          <div id="timer-bar" class="timer-bar-fill" style="width:100%"></div>
+        </div>
+      </div>
+
+      <!-- Expected Keys -->
+      <div class="keys-section" id="expected-keys-wrap">
+        <div class="keys-label">// Target Keys</div>
+        <div class="key-display-row" id="expected-keys"></div>
+      </div>
+
+      <!-- Pressed Keys -->
+      <div class="keys-section">
+        <div class="keys-label">// Your Input</div>
+        <div class="key-display-row" id="pressed-keys-display">
+          <span class="waiting-text">Press the keys...</span>
+        </div>
+      </div>
+
+      <!-- Hint Box -->
+      <div id="hint-box" class="hint-box">
+        <div class="hint-label">💡 Hint</div>
+        <div id="shortcut-hint-text" class="hint-text"></div>
+      </div>
+
+    </div>
+
+    <!-- Game Actions -->
+    <div class="game-actions">
+      <button class="btn-action hint-btn" onclick="useHint()">💡 Hint (−30%)</button>
+      <button class="btn-action skip-btn" onclick="skipQuestion()">⏭ Skip</button>
+    </div>
+
+  </div>
+
+  <!-- ===================== FEEDBACK OVERLAY ===================== -->
+  <div id="feedback-overlay" class="feedback-overlay" style="display:none">
+    <div id="feedback-text" class="feedback-text"></div>
+    <div id="feedback-sub" class="feedback-sub"></div>
+  </div>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <div id="screen-result" class="screen">
+    <nav class="navbar">
+      <div class="nav-logo">
+        KeyBlitz
+        <span>// RESULTS</span>
+      </div>
+      <button class="nav-btn" onclick="goHome()">🏠 Home</button>
+    </nav>
+
+    <div class="result-container">
+
+      <div class="result-header">
+        <div id="result-grade" class="result-grade">A</div>
+        <div id="result-grade-msg" class="result-grade-msg">Excellent!</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div id="result-score" class="stat-value" style="color:#a78bfa">0</div>
+          <div class="stat-name">Score</div>
+        </div>
+        <div class="stat-card">
+          <div id="result-accuracy" class="stat-value" style="color:#4ade80">0%</div>
+          <div class="stat-name">Accuracy</div>
+        </div>
+        <div class="stat-card">
+          <div id="result-streak" class="stat-value" style="color:#fbbf24">0</div>
+          <div class="stat-name">Best Streak</div>
+        </div>
+        <div class="stat-card">
+          <div id="result-time" class="stat-value" style="color:#60a5fa">0s</div>
+          <div class="stat-name">Total Time</div>
+        </div>
+      </div>
+
+      <div class="results-breakdown">
+        <div class="breakdown-header">// Question Breakdown</div>
+        <div id="results-list" class="results-list"></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-primary" onclick="retryGame()">🔁 Play Again</button>
+        <button class="btn-secondary" onclick="goSelect()">📋 Change Level</button>
+        <button class="btn-secondary" onclick="goHome()">🏠 Home</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+
+</body>
+</html>
